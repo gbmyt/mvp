@@ -1,17 +1,15 @@
 const mongoose = require("mongoose");
+var getYogaPoses = require("../helpers/poses");
 
 main().catch(err => console.log(err));
 
 async function main() {
-	await mongoose.connect("mongodb://localhost/poses");
+	await mongoose.connect("mongodb://localhost/yogizone");
 }
 
-var getYogaPoses = require("../helpers/poses");
-
-// if time:
-// allow users to create/update/delete poses and routine playlists
-
-// Poses Schema
+// =========================
+//         Poses
+// =========================
 const poseSchema = mongoose.Schema({
   id: { type: Number, required: true, unique: true },
   sanskrit_name: String,
@@ -19,23 +17,71 @@ const poseSchema = mongoose.Schema({
   img_url: String,
   created_at: Date,
   updated_at: Date,
-});
+}, { collection: 'poses' });
 
 const Pose = mongoose.model("Pose", poseSchema);
 
-// Routines Schema
-// const routines = new mongoose.Schema;
-
-// set up save method to save yoga poses to db
+// Save yoga poses to db
 let save = (poses) => {
-  console.log("inside db save function");
-
   // Save them to db
+  console.log("Saving Poses");
+
   poses.forEach((pose) => {
     let currentPose = new Pose(pose);
-    console.log("currentPose", currentPose.sanskrit_name);
     currentPose.save();
   });
 };
 
-module.exports = save;
+// =========================
+//        Routines
+// =========================
+
+// if time:
+// allow users to create/update/delete poses and routine playlists
+
+// Routines Schema
+const routineSchema = mongoose.Schema({
+  type: String,
+  name: { type: String, required: true, trim: true },
+  poses: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Pose'
+    }],
+  created_at: { type: Date, required: true, default: Date.now },
+  updated_at: { type: Date, default: Date.now }
+}, { collection: 'routines' });
+
+const Routine = mongoose.model("Routine", routineSchema);
+
+routineSchema.methods.findRoutines = function(cb) {
+  return mongoose.model('Routine').find(cb);
+};
+
+// Save routines to db
+let saveRoutine = async (userRoutine) => {
+  await mongoose.connect('mongodb://localhost/yogizone');
+  mongoose.model('Pose', poseSchema);
+
+  var poses = await mongoose.model('Pose').find();
+
+  let routine = userRoutine || new Routine({
+    type: 'routine',
+    name: 'All Poses',
+    poses: [...poses]
+  });
+  routine.save();
+};
+
+let findRoutines = async () => {
+  console.log('inside findRoutines');
+  // await mongoose.connect('mongodb://localhost/yogizone');
+  // mongoose.model('Routine', routineSchema);
+
+  // var routines = Routine.find();
+  // console.log('find routines', routines.db);
+  // cb(routines);
+};
+
+module.exports.save = save;
+module.exports.saveRoutine = saveRoutine;
+module.exports.findRoutines = findRoutines;
