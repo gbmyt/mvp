@@ -1,7 +1,8 @@
 import React from "react";
+import Player from "./Player.jsx";
 
 const App = () => {
-  return <h1>Hello, Yogis!</h1>;
+  return <Player />;
 };
 
 export default App;

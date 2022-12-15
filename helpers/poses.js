@@ -14,4 +14,8 @@ var getYogaPoses = (cb) => {
 	});
 };
 
+var getNextPose = () => {
+	// get next pose and display it to Player component
+};
+
 module.exports = getYogaPoses;
