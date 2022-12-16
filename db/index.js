@@ -11,7 +11,6 @@ async function main() {
 //         Poses
 // =========================
 const poseSchema = mongoose.Schema({
-  id: { type: Number, required: true, unique: true },
   sanskrit_name: String,
   english_name: String,
   img_url: String,
@@ -23,7 +22,6 @@ const Pose = mongoose.model("Pose", poseSchema);
 
 // Save yoga poses to db
 let save = (poses) => {
-  // Save them to db
   console.log("Saving Poses");
 
   poses.forEach((pose) => {
@@ -35,14 +33,9 @@ let save = (poses) => {
 // =========================
 //        Routines
 // =========================
-
-// if time:
-// allow users to create/update/delete poses and routine playlists
-
-// Routines Schema
 const routineSchema = mongoose.Schema({
   type: String,
-  name: { type: String, required: true, trim: true },
+  name: { type: String, required: true, unique: true, trim: true },
   poses: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Pose'
@@ -59,10 +52,9 @@ routineSchema.methods.findRoutines = function(cb) {
 
 // Save routines to db
 let saveRoutine = async (userRoutine) => {
-  await mongoose.connect('mongodb://localhost/yogizone');
   mongoose.model('Pose', poseSchema);
-
   var poses = await mongoose.model('Pose').find();
+  // console.log('saveR poses', poses);
 
   let routine = userRoutine || new Routine({
     type: 'routine',
@@ -72,16 +64,28 @@ let saveRoutine = async (userRoutine) => {
   routine.save();
 };
 
-let findRoutines = async () => {
-  console.log('inside findRoutines');
-  // await mongoose.connect('mongodb://localhost/yogizone');
-  // mongoose.model('Routine', routineSchema);
+let findRoutinePoses = async (name) => {
+  console.log('inside findRoutinePoses');
 
-  // var routines = Routine.find();
-  // console.log('find routines', routines.db);
-  // cb(routines);
+  let rName = name || "All Poses";
+
+  Routine.findOne({ "name": rName }, (err, routine) => {
+    if (err) {
+      console.log(err)
+    }
+    let poses = routine.poses;
+
+    poses.forEach(pose => {
+      Pose.findOne({ _id: pose._id }, (err, result) => {
+        if(err) {
+          console.log(err);
+        }
+        console.log(result);
+      })
+    })
+  });
 };
 
 module.exports.save = save;
 module.exports.saveRoutine = saveRoutine;
-module.exports.findRoutines = findRoutines;
+module.exports.findRoutinePoses = findRoutinePoses;
