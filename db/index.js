@@ -49,7 +49,7 @@ const routineSchema = mongoose.Schema({
   type: String,
   name: { type: String, required: true, unique: true, trim: true },
   poses: [{
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Types.ObjectId,
       ref: 'Pose'
     }],
   created_at: { type: Date, required: true, default: Date.now },
@@ -83,15 +83,19 @@ let getRoutine = async (name) => {
   return routine;
 };
 
-let getPoses = async (routine) => {
+let getPoses = async (id) => {
   console.log('Getting Routine Poses');
-  var r = routine || 'All Poses';
-  var routine = await Routine.findOne({ 'name': r });
+
+  var allPoses = await Routine.findOne({ name: 'All Poses' });
+
+  var rId = id || allPoses._id.toString();
+  var routine = await Routine.findOne({ '_id': rId });
   var poses = [];
 
-  for (var i = 0; i < routine.poses.length; i++) {
-    let pose = await Pose.find({ _id: routine.poses[i]._id });
-    poses.push(pose[0]);
+  for (var i = 0; i < routine['poses'].length; i++) {
+    var currPose = await Pose.findOne({ '_id': routine['poses'][i]._id });
+    // console.log('currentID', currPose);
+    poses.push(currPose);
   }
   return poses;
 };

@@ -1,26 +1,44 @@
 import React from 'react';
+import $ from 'jquery';
+// import axios from 'axios';
 
 const RoutinesList = props => {
 	let routines = props.rt;
-	if(routines.length) {
-		// console.log('routines?',  props.rt[0].name);
-		console.log('name', routines[0].name);
-	}
 
 	React.useEffect(() => {
 		props.getRoutines()
 	}, [props.routines]);
 
+	let clickHandler = (e) => {
+		console.log(e.target.id);
+
+		$.ajax({
+			url: '/routine/' + e.target.id,
+			method: 'GET',
+			data: e.target.id,
+			dataType: 'json',
+			success: function(data) {
+				console.log('Indiv Routine data', data);
+			},
+			error: function(err) {
+				console.log(err);
+			}
+		})
+	};
+
 	return (
 		<div className="routines">
-			<button onClick={() => { props.getRoutines() }}>Refresh</button>
-			<h3>Routines</h3>
 			<table>
 				<tbody>
 					<tr>
-						<th>Name</th>
+						<th>Routines</th>
 					</tr>
-					{routines.length ? routines.map(routine =>  <tr key={routine.name}><td>{routine.name}</td></tr>) : <tr><td></td></tr>}
+					{routines.length ? routines.map(routine =>
+						<tr key={routine._id}>
+							<td>
+								<a onClick={clickHandler} id={routine._id} src="#">{routine.name}</a>
+							</td>
+						</tr>) : <tr></tr>}
 				</tbody>
 			</table>
 		</div>

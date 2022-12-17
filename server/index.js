@@ -11,8 +11,8 @@ var {
   getPoses,
 } = require("../db/index");
 
-// app.use(express.urlencoded({ extended: true }));
-// app.use(express.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Save Poses to Database (maybe this shouldn't be done on every GET to home?)
 app.get("/", async (req, res, next) => {
@@ -21,8 +21,7 @@ app.get("/", async (req, res, next) => {
       console.log("Done Saving");
     });
     next();
-  })
-  .use(express.static("client"));
+}).use(express.static("client"));
 
 app.get("/routines", async (req, res) => {
   console.log("Fetching Routines");
@@ -38,11 +37,19 @@ app.post("/routine/create", async (req, res) => {
 });
 
 // Get And Display Poses For Selected Routine
-app.get("/routine/poses", async (req, res) => {
-  var data = await getPoses(); // send routine with res.body?
-  console.log("Get Poses Result", data);
-  // res.send("Poses for selected routine");
-  res.send(data);
+// app.post("/routine/poses", (req, res) => {
+// 	console.log('got body', req.body);
+// 	res.send(req.body)
+//   // var data = await getPoses(); // send routine with res.body?
+//   // console.log("Get Poses Result", data);
+//   // // res.send("Poses for selected routine");
+//   // res.send(data);
+// });
+
+app.get("/routine/:id", async (req, res) => {
+	var poses = await getPoses(req.params['id']);
+	// console.log('Got Routine\'s Poses', poses);
+	res.send(poses);
 });
 
 app.listen(port, (err) => {
