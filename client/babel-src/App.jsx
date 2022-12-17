@@ -7,23 +7,27 @@ import $ from 'jquery';
 // GET routines and display them in a handler of some kind
 
 const App = () => {
-  const onGetPoses = async (cb) => {
+  const [routines, setRoutines] = React.useState({});
+
+  const getRoutines = async () => {
     $.ajax({
-      url: '/routine/poses',
+      url: '/routines',
       method: 'GET',
       success: function(data) {
-        console.log('GET SUCCESS');
-        cb(data);
+        console.log('GET SUCCESS', data);
+        setRoutines(data);
       },
       error: function(err) {
         console.log('Err', err);
       }
     });
+
+    console.log(routines);
   };
 
   return (
     <>
-      <RoutinesList onGetPoses={onGetPoses} />
+      <RoutinesList rt={routines} getRoutines={getRoutines} />
     </>
   )
 };

@@ -7,7 +7,6 @@ var getYogaPoses = require("../helpers/poses");
 var {
   save,
   saveRoutine,
-  getRoutine,
   getRoutines,
   getPoses,
 } = require("../db/index");
@@ -40,10 +39,10 @@ app.post("/routine/create", async (req, res) => {
 
 // Get And Display Poses For Selected Routine
 app.get("/routine/poses", async (req, res) => {
-  var data = await getPoses();
+  var data = await getPoses(); // send routine with res.body?
   console.log("Get Poses Result", data);
-  res.send("Poses for selected routine");
-  // res.send(data);
+  // res.send("Poses for selected routine");
+  res.send(data);
 });
 
 app.listen(port, (err) => {
