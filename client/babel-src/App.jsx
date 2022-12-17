@@ -1,8 +1,9 @@
 import React from "react";
 import $ from 'jquery';
+import { BrowserRouter, Router } from 'react-router-dom';
 
 import RoutinesList from "./RoutinesList.jsx";
-// import Player from "./Player.jsx";
+import Player from "./Player.jsx";
 
 const App = () => {
   const [routines, setRoutines] = React.useState({});
@@ -24,9 +25,9 @@ const App = () => {
   };
 
   return (
-    <>
+    <BrowserRouter>
       <RoutinesList rt={routines} getRoutines={getRoutines} />
-    </>
+    </BrowserRouter>
   )
 };
 

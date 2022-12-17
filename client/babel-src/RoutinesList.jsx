@@ -1,17 +1,16 @@
 import React from 'react';
 import $ from 'jquery';
-// import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const RoutinesList = props => {
 	let routines = props.rt;
+	let navigate = useNavigate();
 
 	React.useEffect(() => {
 		props.getRoutines()
 	}, [props.routines]);
 
 	let clickHandler = (e) => {
-		console.log(e.target.id);
-
 		$.ajax({
 			url: '/routine/' + e.target.id,
 			method: 'GET',
@@ -24,7 +23,8 @@ const RoutinesList = props => {
 				console.log(err);
 			}
 		})
-		// useNavigate(`/routine/${e.target.id}`); // this doesn't work
+
+		navigate(`/routine/${e.target.id}`);
 	};
 
 	return (
@@ -37,7 +37,7 @@ const RoutinesList = props => {
 					{routines.length ? routines.map(routine =>
 						<tr key={routine._id}>
 							<td>
-								<a onClick={clickHandler} id={routine._id} href={`/routine/${routine._id}`}>{routine.name}</a>
+								<a onClick={clickHandler} id={routine._id}>{routine.name}</a>
 							</td>
 						</tr>) : <tr></tr>}
 				</tbody>
