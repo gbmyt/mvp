@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 var getYogaPoses = require("../helpers/poses");
 
@@ -12,7 +13,11 @@ async function main() {
 // ===============================
 const poseSchema = mongoose.Schema({
   sanskrit_name: String,
-  english_name: String,
+  english_name: {
+    type: String,
+    required: true,
+    index: { unique: true, background: false }
+  },
   img_url: String,
   created_at: Date,
   updated_at: Date,
@@ -21,12 +26,19 @@ const poseSchema = mongoose.Schema({
 const Pose = mongoose.model("Pose", poseSchema);
 
 // Poses Model Helper Methods
-let save = (poses) => {
+let save = async (poses) => {
   console.log("Saving Poses");
 
-  poses.forEach((pose) => {
+  await poses.forEach((pose) => {
     let currentPose = new Pose(pose);
-    currentPose.save();
+    try {
+      Pose.findOne({ 'english_name': pose.english_name }, (err, result) => {
+        if (err) console.error(err);
+        if (!result) { currentPose.save() }
+      })
+    } catch (err) {
+      console.error(err);
+    }
   });
 };
 
@@ -58,7 +70,7 @@ let saveRoutine = async (userRoutine) => {
   await routine.save();
 };
 
-let getRoutines = async () => {
+let getRoutines = async (cb) => {
   var routines = await Routine.find();
   return routines;
 };
@@ -77,17 +89,15 @@ let getPoses = async (routine) => {
   var routine = await Routine.findOne({ 'name': r });
   var poses = [];
 
-  routine.poses.forEach(async pose => {
-    let current = await Pose.find({ _id: routine.poses[i]._id });
-    poses.push(current[0]);
-  })
+  for (var i = 0; i < routine.poses.length; i++) {
+    let pose = await Pose.find({ _id: routine.poses[i]._id });
+    poses.push(pose[0]);
+  }
   return poses;
 };
-
 
 module.exports.save = save;
 module.exports.saveRoutine = saveRoutine;
 module.exports.getRoutine = getRoutine;
 module.exports.getRoutines = getRoutines;
 module.exports.getPoses = getPoses;
-
