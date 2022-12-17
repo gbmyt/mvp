@@ -1,8 +1,24 @@
-.player {
+.body {
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0 auto;
+}
+
+.routines {
+  border: 1px solid silver;
+  border-radius: 1.75rem;
+  padding: 2rem;
+  margin: 0 3rem;
+  text-align: center;
+}
+
+.routines table {
+  margin: 0 auto;
+}
+
+.player {
   margin: 0 auto;
   padding: 0 3%;
   max-width: 60%;

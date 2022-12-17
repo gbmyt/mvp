@@ -7,9 +7,9 @@ async function main() {
 	await mongoose.connect("mongodb://localhost/yogizone");
 }
 
-// =========================
-//         Poses
-// =========================
+// ===============================
+//            Poses
+// ===============================
 const poseSchema = mongoose.Schema({
   sanskrit_name: String,
   english_name: String,
@@ -20,7 +20,7 @@ const poseSchema = mongoose.Schema({
 
 const Pose = mongoose.model("Pose", poseSchema);
 
-// Save yoga poses to db
+// Poses Model Helper Methods
 let save = (poses) => {
   console.log("Saving Poses");
 
@@ -30,9 +30,9 @@ let save = (poses) => {
   });
 };
 
-// =========================
-//        Routines
-// =========================
+// ===============================
+//            Routines
+// ===============================
 const routineSchema = mongoose.Schema({
   type: String,
   name: { type: String, required: true, unique: true, trim: true },
@@ -46,46 +46,48 @@ const routineSchema = mongoose.Schema({
 
 const Routine = mongoose.model("Routine", routineSchema);
 
-routineSchema.methods.findRoutines = function(cb) {
-  return mongoose.model('Routine').find(cb);
-};
-
-// Save routines to db
+// Routine Model Helper Methods
 let saveRoutine = async (userRoutine) => {
-  mongoose.model('Pose', poseSchema);
-  var poses = await mongoose.model('Pose').find();
-  // console.log('saveR poses', poses);
+  var poses = await Pose.find();
 
   let routine = userRoutine || new Routine({
     type: 'routine',
     name: 'All Poses',
     poses: [...poses]
   });
-  routine.save();
+  await routine.save();
 };
 
-let findRoutinePoses = async (name) => {
-  console.log('inside findRoutinePoses');
+let getRoutines = async () => {
+  var routines = await Routine.find();
+  return routines;
+};
+
+let getRoutine = async (name) => {
+  console.log('inside getRoutine');
 
   let rName = name || "All Poses";
-
-  Routine.findOne({ "name": rName }, (err, routine) => {
-    if (err) {
-      console.log(err)
-    }
-    let poses = routine.poses;
-
-    poses.forEach(pose => {
-      Pose.findOne({ _id: pose._id }, (err, result) => {
-        if(err) {
-          console.log(err);
-        }
-        console.log(result);
-      })
-    })
-  });
+  var routine = await Routine.find({ "name": rName });
+  return routine;
 };
+
+let getPoses = async (routine) => {
+  console.log('Getting Routine Poses');
+  var r = routine || 'All Poses';
+  var routine = await Routine.findOne({ 'name': r });
+  var poses = [];
+
+  routine.poses.forEach(async pose => {
+    let current = await Pose.find({ _id: routine.poses[i]._id });
+    poses.push(current[0]);
+  })
+  return poses;
+};
+
 
 module.exports.save = save;
 module.exports.saveRoutine = saveRoutine;
-module.exports.findRoutinePoses = findRoutinePoses;
+module.exports.getRoutine = getRoutine;
+module.exports.getRoutines = getRoutines;
+module.exports.getPoses = getPoses;
+
