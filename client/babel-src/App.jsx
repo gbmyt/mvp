@@ -1,6 +1,6 @@
 import React from "react";
 import $ from 'jquery';
-import { BrowserRouter, Router } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import RoutinesList from "./RoutinesList.jsx";
 import Player from "./Player.jsx";
@@ -25,9 +25,10 @@ const App = () => {
   };
 
   return (
-    <BrowserRouter>
-      <RoutinesList rt={routines} getRoutines={getRoutines} />
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<RoutinesList rt={routines} getRoutines={getRoutines} />} />
+      <Route path="/routine/:id" element={<Player />} />
+    </Routes>
   )
 };
 
