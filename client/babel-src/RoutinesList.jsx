@@ -24,6 +24,7 @@ const RoutinesList = props => {
 				console.log(err);
 			}
 		})
+		// useNavigate(`/routine/${e.target.id}`); // this doesn't work
 	};
 
 	return (
@@ -36,7 +37,7 @@ const RoutinesList = props => {
 					{routines.length ? routines.map(routine =>
 						<tr key={routine._id}>
 							<td>
-								<a onClick={clickHandler} id={routine._id} src="#">{routine.name}</a>
+								<a onClick={clickHandler} id={routine._id} href={`/routine/${routine._id}`}>{routine.name}</a>
 							</td>
 						</tr>) : <tr></tr>}
 				</tbody>
